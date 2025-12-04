@@ -39,21 +39,28 @@ function Move-Dial {
         }
     }
 }
-[string]$InputFilePath = "$PSScriptRoot\AoCode_1_Input.txt"
+$AocData = Import-PowerShellDataFile -Path "$PSScriptRoot\Day1_Details.psd1"
+[string]$InputFilePath = "$PSScriptRoot\$($AocData.InputFile)"
 if ( -not (Test-Path $InputFilePath) ) {
     Write-Warning "Cannot find input file: $InputFilePath"
     return
 }
 $InputData = Get-Content $InputFilePath
-$Start = 50
-$Max = 99
-$Min = 0
-$Positions = @($Min..$Max)
+$Start = $AocData.Start
 $ZeroCount = 0
+$SafeData = @{
+    Min = $AocData.Min
+    Max = $AocData.Max
+}
 foreach ( $Turn in $InputData ) {
     $Direction = $Turn.ToCharArray()[0]
     $Clicks = [int]($Turn.TrimStart($Direction))
-    $NewPos = Move-Dial -Start $Start -Direction $Direction -Clicks $Clicks
+    $ClickParams = @{
+        Start = $Start
+        Direction = $Direction
+        Clicks = $Clicks
+    }
+    $NewPos = Move-Dial @ClickParams @SafeData
     if ( $NewPos -eq 0 ) { $ZeroCount++ }
     $Start = $NewPos
 }

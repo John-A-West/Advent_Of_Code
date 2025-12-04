@@ -61,28 +61,36 @@ function Move-Dial {
         }
     }
 }
-[string]$InputFilePath = "$PSScriptRoot\AoCode_1_Input.txt"
+
+$AocData = Import-PowerShellDataFile -Path "$PSScriptRoot\Day1_Details.psd1"
+[string]$InputFilePath = "$PSScriptRoot\$($AocData.InputFile)"
 if ( -not (Test-Path $InputFilePath) ) {
     Write-Warning "Cannot find input file: $InputFilePath"
     return
 }
-$script:RecurseMoves = 0
 $InputData = Get-Content $InputFilePath
-$Start = 50
-$Max = 99
-$Min = 0
+$Start = $AocData.Start
 $ZeroCount = 0
+$SafeData = @{
+    Min = $AocData.Min
+    Max = $AocData.Max
+}
 foreach ( $Turn in $InputData ) {
     $Direction = $Turn.ToCharArray()[0]
     $Clicks = [int]($Turn.TrimStart($Direction))
 
+    $ClickParams = @{
+        Start = $Start
+        Direction = $Direction
+        Clicks = $Clicks
+    }
     # figure out the next position
-    $NewPos = Move-Dial -Start $Start -Direction $Direction -Clicks $Clicks
+    $NewPos = Move-Dial @ClickParams @SafeData
 
     # count how many times we end at zero or pass zero
-    $ZeroHits = Count-Zero -Start $Start -Direction $Direction -Clicks $Clicks
+    $ZeroHits = Count-Zero @ClickParams
     $ZeroCount += $ZeroHits
-    
+
     $Start = $NewPos
 }
-Write-Host "Moves ending at 0     : $ZeroCount"
+Write-Host "Moves ending at 0: $ZeroCount"
