@@ -1,66 +1,9 @@
 <#
 This is the solution for Advent of Code 2025 Day 1, Part 2
 #>
-function Count-Zero {
-    [CmdletBinding()]
-    param (
-        $Start,
-        [ValidateSet('L','R')]
-        $Direction,
-        $Clicks
-    )
-    $Result = 0
-    $Position = $Start
-    for ( $i=0; $i -lt $Clicks; $i++ ) {
-        if ( $Direction -eq 'R' ) {
-            $Position += 1
-        } else {
-            $Position -= 1
-        }
-        if ( ($Position % 100) -eq 0 ) {
-            $Result++
-        }
-    }
-    $Result
-}
-function Move-Dial {
-    [CmdletBinding()]
-    param (
-        $Start,
-        [ValidateSet('L','R')]
-        $Direction,
-        $Clicks,
-        $Min = 0,
-        $Max = 99
-    )
-    if ( $Direction -eq 'R' ) {
-        # turn to the right
-        if ( ($Start + $Clicks) -le $Max ) {
-            $Start + $Clicks
-        } else {
-            $ClicksToMin = $Max - $Start + 1 # how many clicks does it take to get to Min
-            $MoveParams = @{
-                Start = $Min
-                Direction = $Direction
-                Clicks = ($Clicks - $ClicksToMin)
-            }
-            Move-Dial @MoveParams
-        }
-    } else {
-        # turn to the left
-        if ( ($Start - $Clicks) -ge $Min ) {
-            $Start - $Clicks
-        } else {
-            $ClicksToMax = $Start + 1 # how many clicks does it take to get to Max
-            $MoveParams = @{
-                Start = $Max
-                Direction = $Direction
-                Clicks = ($Clicks - $ClicksToMax)
-            }
-            Move-Dial @MoveParams
-        }
-    }
-}
+# import helper functions
+$HelperFolder = Join-Path -Path (Split-Path $PSScriptRoot) -ChildPath "Helpers\Day_1"
+Get-ChildItem -Path $HelperFolder -Recurse -Filter "*.ps1" | ForEach-Object { Import-Module $_.FullName }
 
 $AocData = Import-PowerShellDataFile -Path "$PSScriptRoot\Day1_Details.psd1"
 [string]$InputFilePath = "$PSScriptRoot\$($AocData.InputFile)"
