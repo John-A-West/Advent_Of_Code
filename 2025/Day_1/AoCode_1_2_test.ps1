@@ -3,7 +3,7 @@ I got off on a tangent with exploring the speeds of different kinds of loops...
 #>
 
 # import helper functions
-$HelperFolder = Join-Path -Path (Split-Path $PSScriptRoot) -ChildPath "Helpers\Day_1"
+$HelperFolder = Join-Path -Path $PSScriptRoot -ChildPath 'Helpers'
 Get-ChildItem -Path $HelperFolder -Recurse -Filter "*.ps1" | ForEach-Object { Import-Module $_.FullName }
 
 $AocData = Import-PowerShellDataFile -Path "$PSScriptRoot\Day1_Details.psd1"
